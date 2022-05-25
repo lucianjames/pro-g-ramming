@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <ncurses.h>
 
 std::string LoadFileToString(const std::string& file_name) {
     std::ifstream file(file_name);
@@ -21,20 +22,45 @@ int main(){
     // Array formatted as so: [0,1,2,3,4,5,6,7,8,9,:]
     std::string characters[11];
     std::string filePath = "ASCII/";
-
-    // Number load loop
     for(int i = 0; i < 10; i++){
         characters[i] = LoadFileToString(filePath + std::to_string(i));
     }
-    // Load the colon
     characters[10] = LoadFileToString("ASCII/:");
+    int charheight = 13;
+    int charwidth = 13;
 
 
-    // Print all the characters for testing purposes
-    for(int i = 0; i < 11; i++){
-        std::cout << characters[i] << std::endl;
-        std::cout << "----------------" << std::endl;
+    // NCURSES TIME!!!
+    initscr(); // sets up memory and clears the screen
+    noecho(); // don't echo the characters to the screen
+    curs_set(0); // hide the cursor
+
+    // Loop time! This displays all the characters one at a time
+    for(int i=0; i<11; i++){
+        // Clear the screen
+        clear();
+        // Create a window for the character of size charheight x charwidth
+        WINDOW *charwin = newwin(charheight, charwidth, 0, 0);
+        refresh();
+        box(charwin, 0, 0);
+        
+        // Break the string into lines based on newline characters
+        std::string charLines[charheight];
+        std::stringstream ss(characters[i]);
+        int lineCount = 0;
+        while(std::getline(ss, charLines[lineCount])){
+            lineCount++;
+        }
+
+        // Draw each line
+        for(int l=0; l<charheight-1; l++){
+            mvwprintw(charwin, l+1, 1, charLines[l].c_str());
+        }
+        // Refresh the window
+        wrefresh(charwin);
+        // Wait for input
+        getch();
     }
-
+    endwin(); // dealloc memory and ends ncurses
     return 0;
 }
