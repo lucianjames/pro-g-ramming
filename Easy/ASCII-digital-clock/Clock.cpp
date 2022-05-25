@@ -2,11 +2,11 @@
 #include <fstream>
 #include <sstream>
 #include <ncurses.h>
-#include<unistd.h>
+#include <unistd.h>
 
 // prefer defines when used in functions because global variables are nasty
-#define CHARHEIGHT 13
-#define CHARWIDTH 13
+#define CHARHEIGHT 9
+#define CHARWIDTH 12
 
 std::string LoadFileToString(const std::string& file_name) {
     std::ifstream file(file_name);
@@ -22,7 +22,9 @@ std::string LoadFileToString(const std::string& file_name) {
 }
 
 void WriteInWindow(std::string x, WINDOW* window){
-    wclear(window); // clear window so there are no artifacts
+    // clear window so there are no artifacts
+    wclear(window);
+
     // Break the string into lines based on newline characters
     std::string charLines[CHARHEIGHT];
     std::stringstream ss(x);
@@ -30,16 +32,17 @@ void WriteInWindow(std::string x, WINDOW* window){
     while(std::getline(ss, charLines[i])) {
         i++;
     }
+
     // Draw each line
     for(int i = 0; i < CHARHEIGHT; i++) {
-        mvwprintw(window, i+1, 1, charLines[i].c_str()); //Offset because box
+        mvwprintw(window, i, 0, charLines[i].c_str());
     }
+
     // Refresh the window
     wrefresh(window);
 }
 
 int main(){
-
     // Pre-load all the files in /ASCII/ into an array of strings
     // Array formatted as so: [0,1,2,3,4,5,6,7,8,9,:]
     std::string characters[11];
@@ -55,30 +58,34 @@ int main(){
     noecho(); // don't echo the characters to the screen
     curs_set(0); // hide the cursor
 
+    // Offset to center the window
+    int widthOffset = (COLS - CHARWIDTH*7) / 2;
+    int heightOffset = (LINES - CHARHEIGHT) / 2;
+
     // Hours windows
-    WINDOW *HoursL = newwin(CHARHEIGHT, CHARWIDTH, 0, 0);
+    WINDOW *HoursL = newwin(CHARHEIGHT, CHARWIDTH, heightOffset, 0 + widthOffset);
     refresh();
-    WINDOW *HoursR = newwin(CHARHEIGHT, CHARWIDTH, 0, CHARWIDTH+1);
+    WINDOW *HoursR = newwin(CHARHEIGHT, CHARWIDTH, heightOffset, CHARWIDTH+1 + widthOffset);
     refresh();
 
     // Hours:Mins seperator window
-    WINDOW *HoursMinsSep = newwin(CHARHEIGHT, CHARWIDTH/2, 0, CHARWIDTH*2+2);
+    WINDOW *HoursMinsSep = newwin(CHARHEIGHT, CHARWIDTH/2, heightOffset, CHARWIDTH*2+2 + widthOffset);
     refresh();
 
     // Minutes windows
-    WINDOW *MinsL = newwin(CHARHEIGHT, CHARWIDTH, 0, CHARWIDTH*3+3 - CHARWIDTH/2);
+    WINDOW *MinsL = newwin(CHARHEIGHT, CHARWIDTH, heightOffset, CHARWIDTH*3+3 - CHARWIDTH/2 + widthOffset);
     refresh();
-    WINDOW *MinsR = newwin(CHARHEIGHT, CHARWIDTH, 0, CHARWIDTH*4+4 - CHARWIDTH/2);
+    WINDOW *MinsR = newwin(CHARHEIGHT, CHARWIDTH, heightOffset, CHARWIDTH*4+4 - CHARWIDTH/2 + widthOffset);
     refresh();
 
     // Mins:Seconds seperator window
-    WINDOW *MinsSecSep = newwin(CHARHEIGHT, CHARWIDTH/2, 0, CHARWIDTH*5+5 - CHARWIDTH/2);
+    WINDOW *MinsSecSep = newwin(CHARHEIGHT, CHARWIDTH/2, heightOffset, CHARWIDTH*5+5 - CHARWIDTH/2 + widthOffset);
     refresh();
 
     // Seconds windows
-    WINDOW *SecsL = newwin(CHARHEIGHT, CHARWIDTH, 0, CHARWIDTH*5+6);
+    WINDOW *SecsL = newwin(CHARHEIGHT, CHARWIDTH, heightOffset, CHARWIDTH*5+6 + widthOffset);
     refresh();
-    WINDOW *SecsR = newwin(CHARHEIGHT, CHARWIDTH, 0, CHARWIDTH*6+7);
+    WINDOW *SecsR = newwin(CHARHEIGHT, CHARWIDTH, heightOffset, CHARWIDTH*6+7 + widthOffset);
     refresh();
 
     // Loop forever
