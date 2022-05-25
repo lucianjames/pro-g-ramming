@@ -1,11 +1,6 @@
 #include <iostream>
 #include <string>
 
-int upperAlphaStart = 65;
-int upperAlphaEnd = 90;
-int lowerAlphaStart = 97;
-int lowerAlphaEnd = 122;
-
 char lowerCaseRot13Character(char c){
 	if(c+13 <= 'z'){ return c+13; }
 	else{ return c-13; }
