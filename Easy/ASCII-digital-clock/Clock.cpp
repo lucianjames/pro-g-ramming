@@ -58,7 +58,7 @@ int main(){
     noecho(); // don't echo the characters to the screen
     curs_set(0); // hide the cursor
 
-    // Offset to center the window
+    // Offset to center the clock
     int widthOffset = (COLS - CHARWIDTH*7) / 2;
     int heightOffset = (LINES - CHARHEIGHT) / 2;
 
