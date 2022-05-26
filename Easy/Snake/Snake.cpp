@@ -60,10 +60,13 @@ int main(){
     mvwprintw(gameWindow, LINES/2 + 1, COLS/2 - 7, "Your score: %d", Snake.length);
     wrefresh(gameWindow);
     usleep(2000000); // Wait for a bit
-    mvwprintw(gameWindow, LINES/2 + 2, COLS/2 - 11, "Press any key to exit..");
+    mvwprintw(gameWindow, LINES/2 + 2, COLS/2 - 11, "Press enter to exit...");
     wrefresh(gameWindow);
     nodelay(stdscr, FALSE);
-    getch(); // Wait for user to press something
+    input = getch();
+    while (input != 10){
+        input = getch();
+    }
     // ================================= //
 
 
