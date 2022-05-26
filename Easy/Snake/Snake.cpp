@@ -41,13 +41,7 @@ int main(){
         Food.drawFood(gameWindow); // Draw all the food
         Snake.checkForSelfCollision(); // Check for self collision
         // Check for food collision:
-        if(Food.checkEatFood(Snake.x, Snake.y)){ // If the snake ate the food
-            Snake.length++; // Increase the snake length
-            Snake.snakeXpreviousPositions.resize(Snake.length); // Resize the previous positions vectors
-            Snake.snakeYpreviousPositions.resize(Snake.length); // Resize the previous positions vectors
-            Snake.snakeXpreviousPositions[Snake.length-1] = -1; // Set the last x position to -1 to hide it until the next update
-            Snake.snakeYpreviousPositions[Snake.length-1] = -1; // Set the last y position to -1 to hide it until the next update
-        }
+        Snake.eat(Food);
         // End game if snake is dead:
         if(!Snake.alive){ 
             break;

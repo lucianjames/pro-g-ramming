@@ -5,6 +5,7 @@
 class snakeClass{
 private:
     int input = -1;
+
 public:
     std::vector<int> snakeXpreviousPositions;
     std::vector<int> snakeYpreviousPositions;
@@ -16,12 +17,14 @@ public:
     char headChar[2] = "@";
     char bodyChar[2] = "#";
 
+
     snakeClass(){ // Constructor
         snakeXpreviousPositions.resize(length);
         snakeYpreviousPositions.resize(length);
         snakeXpreviousPositions[0] = x;
         snakeYpreviousPositions[0] = y;
     }
+
 
     void getInput(){
         int getchInput = getch();
@@ -49,6 +52,7 @@ public:
         }
     }
 
+
     void checkForSelfCollision(){
         for(int i = 0; i < this->length-1; i++){
             if(this->x == this->snakeXpreviousPositions[i] && this->y == this->snakeYpreviousPositions[i]){ // If the snake is at the same position as any of the stored previous positions
@@ -57,7 +61,8 @@ public:
         }
     }
 
-    void update(WINDOW* window, foodClass Food){
+
+    void update(WINDOW* window, foodClass& Food){
         wclear(window); // Clear the window
         // Update position based on direction
         switch(this->direction){
@@ -108,5 +113,16 @@ public:
 
         // Refresh the window
         wrefresh(window);
+    }
+
+
+    void eat(foodClass& Food){
+        if(Food.checkEatFood(this->x, this->y)){ // If the snake ate the food
+            this->length++; // Increase the snake length
+            this->snakeXpreviousPositions.resize(this->length); // Resize the previous positions vectors
+            this->snakeYpreviousPositions.resize(this->length); // Resize the previous positions vectors
+            this->snakeXpreviousPositions[this->length-1] = -1; // Set the last x position to -1 to hide it until the next update
+            this->snakeYpreviousPositions[this->length-1] = -1; // Set the last y position to -1 to hide it until the next update
+        }
     }
 };
