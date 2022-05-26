@@ -45,8 +45,8 @@ int main(){
             Snake.length++;
             Snake.snakeXpreviousPositions.resize(Snake.length);
             Snake.snakeYpreviousPositions.resize(Snake.length);
-            Snake.snakeXpreviousPositions[Snake.length-1] = Snake.y;
-            Snake.snakeYpreviousPositions[Snake.length-1] = Snake.x;
+            Snake.snakeXpreviousPositions[Snake.length-1] = -1;
+            Snake.snakeYpreviousPositions[Snake.length-1] = -1;
         }
         // End game if snake is dead:
         if(!Snake.alive){ 
