@@ -33,19 +33,19 @@ public:
         switch(this->input){
             case 'W': // Fall-through
             case 'w':
-                this->direction = 0;
+                if(this->direction != 2){this->direction = 0;}
                 break;
             case 'D': // Fall-through
             case 'd':
-                this->direction = 1;
+                if(this->direction != 3){this->direction = 1;}
                 break;
             case 'S': // Fall-through
             case 's':
-                this->direction = 2;
+                if(this->direction != 0){this->direction = 2;}
                 break;
             case 'A': // Fall-through
             case 'a':
-                this->direction = 3;
+                if(this->direction != 1){this->direction = 3;}
                 break;
         }
     }
@@ -89,7 +89,6 @@ public:
         if(this->y > COLS-1){
             this->y = 0;
         }
-
 
         // Add new position to the vector
         snakeXpreviousPositions.push_back(this->x);
