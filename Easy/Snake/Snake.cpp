@@ -46,13 +46,12 @@ int main(){
         Snake.update(gameWindow, Food); // Update snake position and redraw it (update() does both)
         Food.drawFood(gameWindow); // Draw all the food
         Snake.checkForSelfCollision(); // Check for self collision
-        // Check for food collision:
-        Snake.eat(Food);
+        Snake.eat(Food);// Check for food collision:
         // End game if snake is dead:
         if(!Snake.alive){ 
             break;
         }
-        usleep(100000); // Wait for a bit
+        usleep(100000); // Wait for a bit (change this to change game speed)
     }
     // ================================= //
 
@@ -66,7 +65,7 @@ int main(){
     mvwprintw(gameWindow, LINES/2, COLS/2 - 5, "Game over!");
     mvwprintw(gameWindow, LINES/2 + 1, COLS/2 - 7, "Your score: %d", Snake.length);
     wrefresh(gameWindow);
-    usleep(2000000); // Wait for a bit
+    usleep(1000000); // Wait for a bit
     mvwprintw(gameWindow, LINES/2 + 2, COLS/2 - 11, "Press enter to exit...");
     wattr_off(gameWindow, A_BOLD, NULL); // Turn bold attribute off
     wattr_off(gameWindow, COLOR_PAIR(2), NULL); // Turn red attribute off
