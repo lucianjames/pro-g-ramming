@@ -1,2 +1,0 @@
-I will be making a neural network in the repo, but not here.
-See the "Real-neural-network" in the medium difficulty category.
