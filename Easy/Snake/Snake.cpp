@@ -45,6 +45,8 @@ int main(){
             Snake.length++;
             Snake.snakeXpreviousPositions.resize(Snake.length);
             Snake.snakeYpreviousPositions.resize(Snake.length);
+            Snake.snakeXpreviousPositions[Snake.length-1] = Snake.y;
+            Snake.snakeYpreviousPositions[Snake.length-1] = Snake.x;
         }
         // End game if snake is dead:
         if(!Snake.alive){ 
@@ -63,7 +65,7 @@ int main(){
     mvwprintw(gameWindow, LINES/2, COLS/2 - 5, "Game over!");
     mvwprintw(gameWindow, LINES/2 + 1, COLS/2 - 7, "Your score: %d", Snake.length);
     wrefresh(gameWindow);
-    usleep(1000000); // Wait for a bit
+    usleep(2000000); // Wait for a bit
     mvwprintw(gameWindow, LINES/2 + 2, COLS/2 - 11, "Press any key to exit..");
     wrefresh(gameWindow);
     nodelay(stdscr, FALSE);
