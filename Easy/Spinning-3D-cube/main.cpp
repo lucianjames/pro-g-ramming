@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include "shaderClass.h"
+
 // The framebuffer size callback function is called whenever the window is resized
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
     glViewport(0, 0, width, height); // Set the viewport to the size of the window
@@ -37,6 +39,42 @@ int main(){
     glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
 
 
+    // === Defining the geometry and create buffers ===
+    // Triangle verts
+    float vertices[] = {
+        -0.5f, -0.5f, 0.0f,
+         0.5f, -0.5f, 0.0f,
+         0.0f,  0.5f, 0.0f
+    };
+
+    // Vertex buffer object
+    // The vertex buffer object (VBO) is a buffer object that stores an array of vertices
+    unsigned int VBO;
+    glGenBuffers(1, &VBO); // Generate 1 buffer
+    glBindBuffer(GL_ARRAY_BUFFER, VBO); // Bind the buffer to the GL_ARRAY_BUFFER target
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Send the data to the buffer
+
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the vertex attribute pointer
+    glEnableVertexAttribArray(0); // Enable the vertex attribute array
+    /* 
+    info about glVertexAttribPointer:
+        1. The index of the generic vertex attribute to be modified (layout (location) = 0 in this case)
+        2. The number of components per generic vertex attribute (3 in this case)
+        3. The data type of each component in the array (GL_FLOAT in this case)
+        4. GL_FALSE means the data is not normalized (GL_TRUE means it is)
+        5. The stride (in bytes) between successive generic vertex attributes. If stride is 0, the generic vertex attributes are understood to be tightly packed in the array.
+        6. The offset (in bytes) of the first component of the first generic vertex attribute in the array.
+    */
+
+    // Vertex array object
+    // The vertex array object (VAO) is a buffer object that
+    unsigned int VAO;
+    glGenVertexArrays(1, &VAO); // Generate 1 VAO
+    glBindVertexArray(VAO); // Bind the VAO
+
+
+    // Create shader program
+    shaderClass shader("shader.vert.glsl", "shader.frag.glsl");
 
     // === Main loop === //
     while (!glfwWindowShouldClose(window)){

@@ -12,6 +12,7 @@ public:
     unsigned int compileShader(unsigned int type, const std::string& source);
     shaderClass(const char* vertexPath, const char* fragmentPath);
     void use() const;
+    
     void setUniform4f(const std::string& name, float x, float y, float z, float w) const;
     void setUniform3f(const std::string& name, float x, float y, float z) const;
     void setUniform2f(const std::string& name, float x, float y) const;

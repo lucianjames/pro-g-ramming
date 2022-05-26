@@ -2,10 +2,12 @@
 
 // Compiling shaders in a function so we dont have to write compilation code twice
 unsigned int shaderClass::compileShader(unsigned int type, const std::string& source) {
+    // Create and compile a shader:
     unsigned int id = glCreateShader(type); // Create shader
-    const char* src = source.c_str();
+    const char* src = source.c_str(); // Get the source code
     glShaderSource(id, 1, &src, nullptr); // Set shader source
     glCompileShader(id); // Compile shader
+
     // Give us some information if compilation fails:
     int result;
     glGetShaderiv(id, GL_COMPILE_STATUS, &result);
@@ -16,8 +18,12 @@ unsigned int shaderClass::compileShader(unsigned int type, const std::string& so
         glDeleteShader(id);
         return 0;
     }
-    return id;
+
+    return id; // Return the shader id
 }
+
+
+
 // Constructor reads and builds the shader
 shaderClass::shaderClass(const char* vertexPath, const char* fragmentPath) {
     // Stuff for debugging:
@@ -50,7 +56,7 @@ shaderClass::shaderClass(const char* vertexPath, const char* fragmentPath) {
     }
     catch (std::ifstream::failure e)
     {
-        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
     }
     const char* vShaderCode = vertexCode.c_str();
     const char* fShaderCode = fragmentCode.c_str();
@@ -71,15 +77,23 @@ shaderClass::shaderClass(const char* vertexPath, const char* fragmentPath) {
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
+    // 3. Clean up shaders
     // Delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(vs);
     glDeleteShader(fs);
 }
+
+
+
 // Use/activate the shader
 void shaderClass::use() const {
     glUseProgram(ID);
 }
 
+
+
+// All the uniform setting shit:
+// Floats:
 void shaderClass::setUniform4f(const std::string& name, float x, float y, float z, float w) const {
     glUniform4f(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
 }
@@ -92,7 +106,7 @@ void shaderClass::setUniform2f(const std::string& name, float x, float y) const 
 void shaderClass::setUniform1f(const std::string& name, float x) const {
     glUniform1f(glGetUniformLocation(ID, name.c_str()), x);
 }
-
+// Ints:
 void shaderClass::setUniform4i(const std::string& name, int x, int y, int z, int w) const {
     glUniform4i(glGetUniformLocation(ID, name.c_str()), x, y, z, w);
 }
@@ -105,4 +119,3 @@ void shaderClass::setUniform2i(const std::string& name, int x, int y) const {
 void shaderClass::setUniform1i(const std::string& name, int x) const {
     glUniform1i(glGetUniformLocation(ID, name.c_str()), x);
 }
-
