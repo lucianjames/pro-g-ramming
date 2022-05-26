@@ -64,8 +64,6 @@ int main(){
     box(gameWindow, 0, 0);
     mvwprintw(gameWindow, LINES/2, COLS/2 - 5, "Game over!");
     mvwprintw(gameWindow, LINES/2 + 1, COLS/2 - 7, "Your score: %d", Snake.length);
-    wrefresh(gameWindow);
-    usleep(1000000); // Wait for a bit
     mvwprintw(gameWindow, LINES/2 + 2, COLS/2 - 11, "Press enter to exit...");
     wattr_off(gameWindow, A_BOLD, NULL); // Turn bold attribute off
     wattr_off(gameWindow, COLOR_PAIR(2), NULL); // Turn red attribute off
