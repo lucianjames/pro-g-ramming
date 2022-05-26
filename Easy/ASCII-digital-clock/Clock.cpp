@@ -93,7 +93,6 @@ int main(){
     {
         // Get current time
         time_t now = time(0);
-        // Get seconds
         tm *ltm = localtime(&now);
         // Get the hours
         int hours = ltm->tm_hour;
