@@ -7,73 +7,72 @@
 #include "snakeClass.h"
 
 int main(){
-    // Init ncurses
+    // ==========Initial setup========== //
     initscr();
     noecho();
     curs_set(0);
     nodelay(stdscr, TRUE); // Don't wait for input
-
-    // Create a window the size of the screen
     WINDOW* gameWindow = newwin(LINES, COLS, 0, 0);
     refresh();
     box(gameWindow, 0, 0);
     wrefresh(gameWindow);
+    snakeClass Snake; // Create a snake object
+    foodClass Food(LINES*COLS/100); // Create food. 1% of the screen is food
+    // ================================= //
 
-    // Write the game title in the middle of the window
-    mvwprintw(gameWindow, LINES/2, COLS/2 - 3, "Snake");
+
+
+    // ==========Title screen=========== //
+    mvwprintw(gameWindow, LINES/2, COLS/2 - 5, "~~Snake~~"); // Write the game title in the middle of the window
+    mvwprintw(gameWindow, LINES/2 + 1, COLS/2 - 10, "Use W,A,S,D to move"); // Write instructions
+    mvwprintw(gameWindow, LINES/2 + 2, COLS/2 - 11, "Press any key to start");
     wrefresh(gameWindow);
-    usleep(1000000);
+    nodelay(stdscr, FALSE); // Wait for input
+    int input = getch();
+    nodelay(stdscr, TRUE); // Dont wait for input
+    // ================================= //
 
-    // Create a snake object
-    snakeClass Snake;
 
-    // Create food
-    foodClass Food(LINES*COLS/100);
 
-    // Main game loop
+    // ==========Game loop============== //
     while(1){
-        // Get input 
-        Snake.getInput();
-
-        // Update snake position and redraw it (update() does both)
-        Snake.update(gameWindow, Food);
-
-        // Draw all the food
-        Food.drawFood(gameWindow);
-
-        // Check for self collision
-        Snake.checkForSelfCollision();
-
-        // Check for food collision
+        Snake.getInput(); // Get input 
+        Snake.update(gameWindow, Food); // Update snake position and redraw it (update() does both)
+        Food.drawFood(gameWindow); // Draw all the food
+        Snake.checkForSelfCollision(); // Check for self collision
+        // Check for food collision:
         if(Food.checkEatFood(Snake.x, Snake.y)){
             Snake.length++;
             Snake.snakeXpreviousPositions.resize(Snake.length);
             Snake.snakeYpreviousPositions.resize(Snake.length);
         }
-
-        // End game if snake is dead
-        if(!Snake.alive){
+        // End game if snake is dead:
+        if(!Snake.alive){ 
             break;
         }
-
-        // Wait for a bit
-        usleep(100000);
+        usleep(100000); // Wait for a bit
     }
+    // ================================= //
 
-    // Show game over text
+
+
+    // ==========Game over============== //
     refresh();
     box(gameWindow, 0, 0);
     wrefresh(gameWindow);
-    mvwprintw(gameWindow, LINES/2, COLS/2 - 3, "Game over!");
+    mvwprintw(gameWindow, LINES/2, COLS/2 - 5, "Game over!");
+    mvwprintw(gameWindow, LINES/2 + 1, COLS/2 - 7, "Your score: %d", Snake.length);
     wrefresh(gameWindow);
-
-    // Wait for a bit
-    usleep(1000000);
-    // Wait for user to press something
+    usleep(1000000); // Wait for a bit
+    mvwprintw(gameWindow, LINES/2 + 2, COLS/2 - 11, "Press any key to exit..");
+    wrefresh(gameWindow);
     nodelay(stdscr, FALSE);
-    getch();
+    getch(); // Wait for user to press something
+    // ================================= //
 
-    // End ncurses
+
+
+    // ===========Cleanup=============== //
     endwin();
     return 0;
 }
