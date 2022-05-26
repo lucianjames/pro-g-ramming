@@ -1,26 +1,18 @@
 #include <iostream>
 #include <string>
 
-char lowerCaseRot13Character(char c){
-	if(c+13 <= 'z'){ return c+13; }
-	else{ return c-13; }
-}
-
-char upperCaseRot13Character(char c){
-	if(c+13 <= 'Z'){ return c+13; }
-	else{ return c-13; }
-}
-
 std::string Rot13(std::string input){
 	// Input is passed by value, so we can modify it
 	// Iterate through all characters in string
 	for(int i=0; i<input.length(); i++){
 		if(isalpha(input[i])){ // Must be a letter
 			if(islower(input[i])){ // Different functions for upper and lower case because of ASCII values of A and a being different (for example)
-				input[i] = lowerCaseRot13Character(input[i]);
+				if(input[i]+13 <= 'z'){ input[i] += 13; }
+				else{ input[i] -= 13; }
 			}
 			else{
-				input[i] = upperCaseRot13Character(input[i]);
+				if(input[i]+13 <= 'Z'){ input[i] += 13; }
+				else{ input[i] -= 13; }
 			}
 		}
 	}
