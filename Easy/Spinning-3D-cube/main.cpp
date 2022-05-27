@@ -2,43 +2,14 @@
 #include <GLFW/glfw3.h>
 #include <iostream>
 
+#include "initHelper.h"
 #include "shaderClass.h"
 #include "VBO.h"
 
-// The framebuffer size callback function is called whenever the window is resized
-void framebuffer_size_callback(GLFWwindow* window, int width, int height){
-    glViewport(0, 0, width, height); // Set the viewport to the size of the window
-}
 
 int main(){
-
-    // Init GLFW and the window hints
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    // Create window and set context
-    GLFWwindow* window = glfwCreateWindow(800, 600, "WindowTitle", NULL, NULL);
-    if (window == NULL){
-        std::cout << "Failed to create GLFW window" << std::endl;
-        glfwTerminate();
-        return -1;
-    }
-    glfwMakeContextCurrent(window);
-
-    // Init glad
-    if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)){
-        std::cout << "Failed to initialize GLAD" << std::endl;
-        return -1;
-    }
-
-    // Set glviewport size
-    glViewport(0, 0, 800, 600);
-
-    // Set framebuffer size callback
-    glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
+    // Set up a GLFW window, and init GLAD:
+    GLFWwindow* window = glInitHelper::setup(); // Setup function exists just to move all the boilerplate crap out of sight
 
     // === Defining the geometry and create buffers ===
     // Triangle verts
@@ -56,7 +27,7 @@ int main(){
 
     // Vertex buffer object
     // The vertex buffer object (VBO) stores an array of vertices to be sent to the GPU
-    VBO vbo(vertices, sizeof(vertices));
+    VBO vbo(vertices, sizeof(vertices)); // Create a VBO, and put the vertex data in it
     vbo.bind();
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the vertex attribute pointer
