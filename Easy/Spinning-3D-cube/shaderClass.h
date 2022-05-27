@@ -22,4 +22,5 @@ public:
     void setUniform3i(const std::string& name, int x, int y, int z) const;
     void setUniform2i(const std::string& name, int x, int y) const;
     void setUniform1i(const std::string& name, int x) const;
+    void setUniformMat4fv(const std::string& name, const float* matrix) const;
 };

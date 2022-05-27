@@ -3,6 +3,10 @@
 #include <iostream>
 #include <math.h>
 
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 #include "initHelper.h"
 #include "shaderClass.h"
 #include "VBO.h"
@@ -25,6 +29,7 @@ int main(){
         0, 1, 3,   // first triangle
         1, 2, 3    // second triangle
     };
+    glm::mat4 transform = glm::mat4(1.0f); // Define a transformation matrix for the square (this is update every frame in the rendering loop)
 
     // === Set up VBO, VBO layout, IBO, VAO, EBO ===
     VBO vertexBuffer(vertices, sizeof(vertices)); // The VBO store the vertex data to be sent to the GPU
@@ -47,11 +52,13 @@ int main(){
         glBindVertexArray(0);
 
         // Render:
-        glClearColor(0.2f, 0.3f, 0.3f, 1.0f); // Set the background color
+        glClearColor(0.1f, 0.1f, 0.1f, 1.0f); // Set the background color
         glClear(GL_COLOR_BUFFER_BIT); // Clear the color buffer
         vertexArray.bind(); // Bind the VAO
-        indexBuffer.bind(); // Bind the IBO
-        shader.use(); // Use the shader
+        indexBuffer.bind(); // Bind the EBO
+        shader.use(); // Use the shader program
+        transform = glm::rotate(transform, (float)glfwGetTime()/100, glm::vec3(0.0f, 0.0f, 1.0f)); // Transform calculation (spin faster as time goes on)
+        shader.setUniformMat4fv("transform", glm::value_ptr(transform)); // Send the transform matrix to the shader
         glDrawElements(GL_TRIANGLES, indexBuffer.getSize(), GL_UNSIGNED_INT, nullptr); // Draw the triangle
 
         // Swap buffers
