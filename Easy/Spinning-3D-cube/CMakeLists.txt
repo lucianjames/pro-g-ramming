@@ -16,6 +16,7 @@ set(SOURCE
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/glad/glad.c
     ${CMAKE_CURRENT_SOURCE_DIR}/shaderClass.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/VBO.cpp
 )
 
 add_executable(main ${SOURCE}) # Add the source files to the executable

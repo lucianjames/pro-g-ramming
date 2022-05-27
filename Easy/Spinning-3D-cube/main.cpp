@@ -3,6 +3,7 @@
 #include <iostream>
 
 #include "shaderClass.h"
+#include "VBO.h"
 
 // The framebuffer size callback function is called whenever the window is resized
 void framebuffer_size_callback(GLFWwindow* window, int width, int height){
@@ -55,10 +56,8 @@ int main(){
 
     // Vertex buffer object
     // The vertex buffer object (VBO) stores an array of vertices to be sent to the GPU
-    unsigned int VBO;
-    glGenBuffers(1, &VBO); // Generate 1 buffer
-    glBindBuffer(GL_ARRAY_BUFFER, VBO); // Bind the buffer to the GL_ARRAY_BUFFER target
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); // Send the data to the buffer
+    VBO vbo(vertices, sizeof(vertices));
+    vbo.bind();
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the vertex attribute pointer
     glEnableVertexAttribArray(0); // Enable the vertex attribute array
