@@ -7,11 +7,21 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3") # Optimisation!!!
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
 
+# Not sure if these are required or not:
 include_directories(${OPENGL_INCLUDE_DIR})
 include_directories(${GLFW3_INCLUDE_DIR})
 
-add_executable(main main.cpp glad/glad.c shaderClass.cpp)
-target_link_libraries(main glfw3 GL X11 pthread Xrandr Xi dl)
+set(SOURCE
+    ${SOURCE}
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/glad/glad.c
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaderClass.cpp
+)
+
+add_executable(main ${SOURCE}) # Add the source files to the executable
+
+target_link_libraries(main 
+    glfw3 GL X11 pthread Xrandr Xi dl)
 
 # Copy GLSL files over to the build directory
 add_custom_command(TARGET main POST_BUILD
