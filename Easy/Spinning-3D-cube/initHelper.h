@@ -16,8 +16,8 @@ namespace glInitHelper{
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     }
 
-    GLFWwindow* CREATEGLFWWINDOW(){ // Create window and set context
-        GLFWwindow* window = glfwCreateWindow(800, 600, "WindowTitle", NULL, NULL);
+    GLFWwindow* CREATEGLFWWINDOW(char name[]){ // Create window and set context
+        GLFWwindow* window = glfwCreateWindow(800, 600, name, NULL, NULL);
         if (window == NULL){
             std::cout << "Failed to create GLFW window" << std::endl;
             glfwTerminate();
@@ -32,9 +32,9 @@ namespace glInitHelper{
         }
     }
 
-    GLFWwindow* setup(){
+    GLFWwindow* setup(char name[]){
         GLFWINIT();
-        GLFWwindow* window = CREATEGLFWWINDOW();
+        GLFWwindow* window = CREATEGLFWWINDOW(name);
         INITGLAD();
         glViewport(0, 0, 800, 600); // Set glviewport size
 
