@@ -11,6 +11,6 @@ This repo is based on this random image i came across a while ago, some of the d
 
 # Stats:
 * {Easy}:      5/37
-* {Medium}:    0/75
+* {Medium}:    0/76
 * {Difficult}: 0/29
 * {Fuck you}:  0/3
