@@ -7,7 +7,6 @@ struct VBO_element {
 	unsigned int type;
 	unsigned int count;
 	unsigned char normalised;
-
 	static unsigned int getSizeOfType(unsigned int type) {
 		switch (type) {
 		case GL_FLOAT:			return 4;
@@ -24,11 +23,9 @@ private:
     unsigned int m_stride;
 public:
     VBO_layout() : m_stride(0) {};
-
     void pushFloat(unsigned int count);
     void pushInt(unsigned int count);
     void pushChar(unsigned int count);
-
     const std::vector<VBO_element> getElements() const;
     unsigned int getStride() const;
 };

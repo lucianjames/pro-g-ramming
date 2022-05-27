@@ -6,9 +6,13 @@ VBO::VBO(float* vertices, unsigned int size) {
     glBufferData(GL_ARRAY_BUFFER, size, vertices, GL_STATIC_DRAW); // Send the data to the buffer
 }
 
+
+
 VBO::~VBO() {
     glDeleteBuffers(1, &ID);
 }
+
+
 
 void VBO::bind() {
     glBindBuffer(GL_ARRAY_BUFFER, ID);
