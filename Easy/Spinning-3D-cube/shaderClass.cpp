@@ -9,13 +9,13 @@ unsigned int shaderClass::compileShader(unsigned int type, const std::string& so
     glCompileShader(id); // Compile shader
 
     // Give us some information if compilation fails:
-    int result;
-    glGetShaderiv(id, GL_COMPILE_STATUS, &result);
-    if (result == GL_FALSE) {
-        char info[1024];
-        glGetShaderInfoLog(id, 1024, NULL, info);
-        std::cout << "Failed to compile shader\n" << info << std::endl;
-        glDeleteShader(id);
+    int result; // Create an integer to store the compile status
+    glGetShaderiv(id, GL_COMPILE_STATUS, &result); // Get the compile status
+    if (result == GL_FALSE) { // If the compile failed:
+        char info[1024]; // Create a buffer for the error message
+        glGetShaderInfoLog(id, 1024, NULL, info); // Get the error message
+        std::cout << "Failed to compile shader\n" << info << std::endl; // Print the error message
+        glDeleteShader(id); // Delete the shader
         return 0;
     }
 
@@ -30,41 +30,39 @@ shaderClass::shaderClass(const char* vertexPath, const char* fragmentPath) {
     int success;
     char infoLog[512];
 
-    // 1. Retrieve the vertex/fragment source code from filePath
-    std::string vertexCode;
-    std::string fragmentCode;
-    std::ifstream vShaderFile;
-    std::ifstream fShaderFile;
+    // ========= 1. Retrieve the vertex/fragment source code from filePath
+    std::string vertexCode; // Create a string to store the vertex shader source code
+    std::string fragmentCode; // Create a string to store the fragment shader source code
+    std::ifstream vShaderFile; // Create an input filestream to read the vertex shader
+    std::ifstream fShaderFile; // Create an input filestream to read the fragment shader
     // Ensure ifstream objects can throw exceptions:
     vShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
     fShaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
-    try
-    {
+    try{
         // Open files
         vShaderFile.open(vertexPath);
         fShaderFile.open(fragmentPath);
-        std::stringstream vShaderStream, fShaderStream;
-        // Read file's buffer contents into streams
+        std::stringstream vShaderStream, fShaderStream; // Create string streams to store the contents of the files
+        // Read file's buffer contents into streams:
         vShaderStream << vShaderFile.rdbuf();
         fShaderStream << fShaderFile.rdbuf();
-        // Close file handlers
+        // Close file handlers:
         vShaderFile.close();
         fShaderFile.close();
         // Convert stream into string
         vertexCode = vShaderStream.str();
         fragmentCode = fShaderStream.str();
     }
-    catch (std::ifstream::failure e)
-    {
+    catch (std::ifstream::failure e){
         std::cout << "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ" << std::endl;
     }
-    const char* vShaderCode = vertexCode.c_str();
-    const char* fShaderCode = fragmentCode.c_str();
+    const char* vShaderCode = vertexCode.c_str(); // Get the vertex shader code in a c-string
+    const char* fShaderCode = fragmentCode.c_str(); // Get the fragment shader code in a c-string
 
-    // 2. Compile shaders
-    unsigned int vs = compileShader(GL_VERTEX_SHADER, vShaderCode);
-    unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fShaderCode);
-    // Create Shader Program
+    // ========== 2. Compile shaders:
+    unsigned int vs = compileShader(GL_VERTEX_SHADER, vShaderCode); // Compile the vertex shader and store the id
+    unsigned int fs = compileShader(GL_FRAGMENT_SHADER, fShaderCode); // Compile the fragment shader and store the id
+    // Create Shader Program:
     ID = glCreateProgram();
     glAttachShader(ID, vs);
     glAttachShader(ID, fs);
@@ -77,7 +75,7 @@ shaderClass::shaderClass(const char* vertexPath, const char* fragmentPath) {
         std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
     }
 
-    // 3. Clean up shaders
+    // ========== 3. Clean up shaders
     // Delete the shaders as they're linked into our program now and no longer necessary
     glDeleteShader(vs);
     glDeleteShader(fs);
