@@ -5,6 +5,8 @@
 #include "initHelper.h"
 #include "shaderClass.h"
 #include "VBO.h"
+#include "VBO_layout.h"
+#include "VAO.h"
 
 
 int main(){
@@ -21,17 +23,14 @@ int main(){
 
     // Vertex array object
     // The vertex array object (VAO) stores all of the state needed to supply vertex data
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO); // Generate 1 VAO
-    glBindVertexArray(VAO); // Bind the VAO
+    VAO vao;
 
-    // Vertex buffer object
-    // The vertex buffer object (VBO) stores an array of vertices to be sent to the GPU
-    VBO vbo(vertices, sizeof(vertices)); // Create a VBO, and put the vertex data in it
-    vbo.bind();
-
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); // Set the vertex attribute pointer
-    glEnableVertexAttribArray(0); // Enable the vertex attribute array
+    // Set up VBO, VBO layout, IBO, VAO
+    VBO vertexBuffer(vertices, 3 * 3 * sizeof(float));
+    VBO_layout layout;
+    layout.pushFloat(3); // Position data
+    VAO vertexArray;
+    vertexArray.addBuffer(vertexBuffer, layout);
 
     // Create shader program
     shaderClass shader("GLSL/shader.vert.glsl", "GLSL/shader.frag.glsl");
