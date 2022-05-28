@@ -121,13 +121,22 @@ void recoverHiddenData(std::string imagePath, std::string outputPath){
     }
 }
 
-
+void invalidArgs(){
+    std::cout << "Invalid arguments" << std::endl;
+    std::cout << "Usage: ./main --hide <target_image> <data_file> <output_image_path>" << std::endl;
+    std::cout << "Usage: ./main --recover <image_with_data> <output_data_path>" << std::endl;
+}
 
 // There are two ways to use this program:
 // ./main --hide <target_image> <data_file> <output_image_path>
 // ./main --recover <image_with_data> <output_data_path>
 
 int main(int argc, char** argv){
+    if(argc < 2){
+        invalidArgs();
+        return -1;
+    }
+
     if(strcmp(argv[1], "--hide") == 0){
         std::string targetPath = argv[2];
         std::string dataPath = argv[3];
@@ -141,9 +150,8 @@ int main(int argc, char** argv){
         recoverHiddenData(imagePath, outputPath);
     }
     else{
-        std::cout << "Invalid arguments" << std::endl;
-        std::cout << "Usage: ./main --hide <target_image> <data_file> <output_image_path>" << std::endl;
-        std::cout << "Usage: ./main --recover <image_with_data> <output_data_path>" << std::endl;
+        invalidArgs();
+        return -1;
     }
     return 0;
 }
