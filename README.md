@@ -4,6 +4,7 @@ This repo is based on this random image i came across a while ago, some of the d
 
 # So far i have completed:
 * 44 {Easy} FizzBuzz | 25/05/22
+* 54 {Medium} Hide and extract data in images (Basic steganography)
 * 61 {Easy} ROT13 | 25/05/22 (but edited later just to clean code up)
 * 102 {Easy} Draw a spinning 3D cube | 27/05/22
 * 107 {Easy} Snake | 26/05/22
@@ -11,6 +12,7 @@ This repo is based on this random image i came across a while ago, some of the d
 
 # Stats:
 * {Easy}:      5/37
-* {Medium}:    0/76
+* {Medium}:    1/76
 * {Difficult}: 0/29
 * {Fuck you}:  0/3
+* Total: 6/145
