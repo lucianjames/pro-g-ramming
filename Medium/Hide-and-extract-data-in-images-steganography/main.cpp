@@ -1,17 +1,9 @@
-// Basic steganography using openCV
+// Easier to create a whole new file for this revision.
 #include <opencv2/opencv.hpp>
-#include <iostream>
-#include <string>
 #include <vector>
 #include <bitset>
-
-/*
-
-!!!!!!!!!!!!!!!!!!!
-This code is awful right now, just a proof of concept.
-!!!!!!!!!!!!!!!!!!!
-
-*/
+#include <iostream>
+#include <fstream>
 
 void display_image(cv::Mat image){
     cv::namedWindow("Display Image", cv::WINDOW_NORMAL);
@@ -19,7 +11,8 @@ void display_image(cv::Mat image){
     cv::waitKey(0);
 }
 
-std::vector<std::bitset<8>> imageBits(cv::Mat m){
+// Convert a cv::Mat into a vector of 8-bit sets. Assumes RGB image.
+std::vector<std::bitset<8>> getImageBits(cv::Mat m){
     std::vector<std::bitset<8>> bits;
     for(int i = 0; i < m.rows; i++){
         for(int j = 0; j < m.cols*3; j++){ // Multiply cols by 3 because of the 3 channels (could add a third loop but this is easier)
@@ -29,6 +22,7 @@ std::vector<std::bitset<8>> imageBits(cv::Mat m){
     return bits;
 }
 
+// Convert a vector of 8-bit sets into a cv::Mat.
 cv::Mat bitsToImage(std::vector<std::bitset<8>> bits, int rows, int cols){
     cv::Mat m(rows, cols, CV_8UC3);
     int count = 0;
@@ -41,101 +35,104 @@ cv::Mat bitsToImage(std::vector<std::bitset<8>> bits, int rows, int cols){
     return m;
 }
 
-int main(){
-
-    // Get the data that needs to be hidden
-    cv::Mat image_to_hide = cv::imread("testImages/toHide.png");
-    std::vector<std::bitset<8>> image_to_hide_bits = imageBits(image_to_hide);
-    // Calculate the number of bits that will be hidden
-    int num_bits_to_hide = image_to_hide_bits.size()*8;
-    std::cout << "Number of bits to hide: " << num_bits_to_hide << std::endl;
-
-    // Load the target image
-    cv::Mat target_image = cv::imread("testImages/target.png");
-    std::vector<std::bitset<8>> target_image_bits = imageBits(target_image);
-    // Calculate the number of bits available given only the last bit of each pixel
-    int num_bits_available = target_image_bits.size();
-    std::cout << "Number of bits available: " << num_bits_available << std::endl;
-
-    // Check if there is enough space to hide the data
-    if(num_bits_to_hide > num_bits_available){
-        std::cout << "Not enough space to hide the data" << std::endl;
-        return 0;
+// Read any binary file into a vector of bits
+std::vector<std::bitset<8>> readBinaryFile(std::string file_name){
+    std::vector<std::bitset<8>> bits;
+    std::ifstream file(file_name, std::ios::binary);
+    if(file.is_open()){
+        char c;
+        while(file.get(c)){
+            bits.push_back(std::bitset<8>(c));
+        }
     }
+    return bits;
+}
 
 
-    // Display image before modification
-    std::cout << "Image before modification" << std::endl;
-    display_image(target_image);
+cv::Mat hideDataInImage(std::string targetPath, std::string dataPath){
+    // Get binary data from a file
+    std::vector<std::bitset<8>> toHideBits = readBinaryFile(dataPath);
 
-    // Hide the data
-    // Add some "metadata" to the image first
+    // Load target image
+    cv::Mat targetImage = cv::imread(targetPath);
+
+    // Convert target image to bits
+    std::vector<std::bitset<8>> targetImageBits = getImageBits(targetImage);
+
+    // Add the length of toHideBits*8 to the first few LSB bits of each pixel
+    std::cout << "Hidden data length: " << toHideBits.size() << std::endl;
+    std::bitset<16> hiddenDataLenBin = toHideBits.size();
+    // Print hiddendatalenbin binary for debug
+    std::cout << "Binary representation: " << hiddenDataLenBin << std::endl;
+
     int count = 0;
-
-    // Add the number of rows and cols in the hidden image as 16-bit numbers (short int)
-    std::bitset<16> nRows = image_to_hide.rows;
-    std::bitset<16> nCols = image_to_hide.cols;
-
-    for(int bit=0 ; bit < 8; bit++){
-        target_image_bits[count][0] = nRows[bit];
-        count++;
-    }
-    for(int bit=0 ; bit < 8; bit++){
-        target_image_bits[count][0] = nCols[bit];
+    for(int bit=0 ; bit < 16; bit++){
+        targetImageBits[count][0] = hiddenDataLenBin[bit];
         count++;
     }
 
-    for(int i = 0; i < image_to_hide_bits.size(); i++){
-        for(int bit=0; bit<8; bit++){
-            target_image_bits[count][0] = image_to_hide_bits[i][bit];
+    // Add the actual data to the image
+    for(int i = 0; i < toHideBits.size(); i++){
+        for(int bit = 0; bit < 8; bit++){
+            targetImageBits[count][0] = toHideBits[i][bit];
             count++;
         }
     }
 
-    // Convert the bits back to an image
-    cv::Mat new_image = bitsToImage(target_image_bits, target_image.rows, target_image.cols);
-
-    // Display the new image
-    std::cout << "Image after hiding the data" << std::endl;
-    display_image(new_image);
+    // Convert the bits back into an image
+    cv::Mat imageWithData = bitsToImage(targetImageBits, targetImage.rows, targetImage.cols);
+    return imageWithData;
+}
 
 
-    // Time to try and recover the data!
-    // Convert new_image to a vector of bits
-    std::vector<std::bitset<8>> new_image_bits = imageBits(new_image);
+void recoverHiddenData(std::string imagePath){
+    // Load image
+    cv::Mat image = cv::imread(imagePath);
 
-    // Get the number of rows and cols from the new image
-    std::bitset<16> nRows_new = 0;
-    std::bitset<16> nCols_new = 0;
-    for(int bit=0 ; bit < 8; bit++){
-        nRows_new[bit] = new_image_bits[bit][0];
+    // Get the bits from the image
+    std::vector<std::bitset<8>> imageBits = getImageBits(image);
+
+    // Get the length of the data (read first 16 hidden bits, skipping first 8)
+    std::bitset<16> hiddenDataLenBin;
+    for(int bit = 0; bit < 16; bit++){
+        hiddenDataLenBin[bit] = imageBits[bit][0];
     }
-    for(int bit=0 ; bit < 8; bit++){
-        nCols_new[bit] = new_image_bits[bit+8][0];
-    }
-    std::cout << "Number of rows detected from hidden metadata: " << nRows_new.to_ulong() << std::endl;
-    std::cout << "Number of cols detected from hidden metadata: " << nCols_new.to_ulong() << std::endl;
-    int nRowsInHidden = nRows_new.to_ulong();
-    int nColsInHidden = nCols_new.to_ulong();
 
-    // Get the data from the new image
-    std::vector<std::bitset<8>> recovered_image_data;
-    recovered_image_data.resize(nRows_new.to_ulong()*nCols_new.to_ulong()*3);
-    int recoverycount = 16;
-    for(int i=0; i<nRowsInHidden*nColsInHidden*3; i++){
-        for(int bit=0; bit<8; bit++){
-            recovered_image_data[i][bit] = new_image_bits[recoverycount][0];
-            recoverycount++;
+    // Get the actual data
+    int dataLen = hiddenDataLenBin.to_ulong();
+    std::cout << "Hidden data length according to hidden metadata: " << dataLen << std::endl;
+    std::cout << "Binary representation: " << hiddenDataLenBin << std::endl;
+    std::vector<std::bitset<8>> dataBits;
+    dataBits.resize(dataLen);
+    int count = 16;
+    for(int i = 0; i < dataLen; i++){
+        for(int bit = 0; bit < 8; bit++){
+            dataBits[i][bit] = imageBits[count][0];
+            count++;
         }
     }
 
-    cv::Mat recovered_image = bitsToImage(recovered_image_data, nRows_new.to_ulong(), nCols_new.to_ulong());
-    std::cout << "Recovered data" << std::endl;
-    display_image(recovered_image);
+    // Write the bits to a file
+    std::ofstream file("data.bin", std::ios::binary);
+    if(file.is_open()){
+        for(int i = 0; i < dataBits.size(); i++){
+            file << (char)dataBits[i].to_ulong();
+        }
+    }
+}
 
 
-    // Save the new image with the hidden data
-    cv::imwrite("testImages/newImage.png", new_image);
+int main(){
+
+    // Hide data in image
+    cv::Mat imageWithData = hideDataInImage("testImages/target.png", "testImages/data.txt");
+
+    // Write the image to a file
+    cv::imwrite("testImages/targetWithData.png", imageWithData);
+
+
+    // Recover hidden data
+    recoverHiddenData("testImages/targetWithData.png");
 
     return 0;
 }
