@@ -4,7 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <filesystem>
-
+// Some of the above are also included in the two below, but I'm including them here for completeness
 #include "hideDataInImage.h"
 #include "recoverHiddenData.h"
 
