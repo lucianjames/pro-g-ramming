@@ -1,4 +1,3 @@
-// Easier to create a whole new file for this revision.
 #include <opencv2/opencv.hpp>
 #include <vector>
 #include <bitset>
