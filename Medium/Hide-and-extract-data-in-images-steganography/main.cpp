@@ -85,7 +85,7 @@ cv::Mat hideDataInImage(std::string targetPath, std::string dataPath){
 }
 
 
-void recoverHiddenData(std::string imagePath){
+void recoverHiddenData(std::string imagePath, std::string outputPath){
     // Load image
     cv::Mat image = cv::imread(imagePath);
 
@@ -113,7 +113,7 @@ void recoverHiddenData(std::string imagePath){
     }
 
     // Write the bits to a file
-    std::ofstream file("data.bin", std::ios::binary);
+    std::ofstream file(outputPath, std::ios::binary);
     if(file.is_open()){
         for(int i = 0; i < dataBits.size(); i++){
             file << (char)dataBits[i].to_ulong();
@@ -122,17 +122,28 @@ void recoverHiddenData(std::string imagePath){
 }
 
 
-int main(){
 
-    // Hide data in image
-    cv::Mat imageWithData = hideDataInImage("testImages/target.png", "testImages/data.txt");
+// There are two ways to use this program:
+// ./main --hide <target_image> <data_file> <output_image_path>
+// ./main --recover <image_with_data> <output_data_path>
 
-    // Write the image to a file
-    cv::imwrite("testImages/targetWithData.png", imageWithData);
-
-
-    // Recover hidden data
-    recoverHiddenData("testImages/targetWithData.png");
-
+int main(int argc, char** argv){
+    if(strcmp(argv[1], "--hide") == 0){
+        std::string targetPath = argv[2];
+        std::string dataPath = argv[3];
+        std::string outputPath = argv[4];
+        cv::Mat imageWithData = hideDataInImage(targetPath, dataPath);
+        cv::imwrite(outputPath, imageWithData);
+    }
+    else if(strcmp(argv[1], "--recover") == 0){
+        std::string imagePath = argv[2];
+        std::string outputPath = argv[3];
+        recoverHiddenData(imagePath, outputPath);
+    }
+    else{
+        std::cout << "Invalid arguments" << std::endl;
+        std::cout << "Usage: ./main --hide <target_image> <data_file> <output_image_path>" << std::endl;
+        std::cout << "Usage: ./main --recover <image_with_data> <output_data_path>" << std::endl;
+    }
     return 0;
 }
