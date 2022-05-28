@@ -48,7 +48,7 @@ std::vector<std::bitset<8>> readBinaryFile(std::string file_name){
     return bits;
 }
 
-
+// Overwrites the least significant bit of pixels
 cv::Mat hideDataInImage(std::string targetPath, std::string dataPath){
     // Get binary data from a file
     std::vector<std::bitset<8>> toHideBits = readBinaryFile(dataPath);
@@ -59,14 +59,18 @@ cv::Mat hideDataInImage(std::string targetPath, std::string dataPath){
     // Convert target image to bits
     std::vector<std::bitset<8>> targetImageBits = getImageBits(targetImage);
 
-    // Add the length of toHideBits*8 to the first few LSB bits of each pixel
+    std::cout << "Number of LSBs to hide in: " << targetImageBits.size() << std::endl;
     std::cout << "Hidden data length: " << toHideBits.size() << std::endl;
-    std::bitset<16> hiddenDataLenBin = toHideBits.size();
-    // Print hiddendatalenbin binary for debug
-    std::cout << "Binary representation: " << hiddenDataLenBin << std::endl;
-
+    if(toHideBits.size() > targetImageBits.size()){
+        std::cout << "Error: Data too big for image...." << std::endl;
+        std::cout << "Returning original image" << std::endl;
+        return targetImage;
+    }
+    
+    // Add the length of toHideBits*8 to the first few LSB bits of each pixel
+    std::bitset<32> hiddenDataLenBin = toHideBits.size();
     int count = 0;
-    for(int bit=0 ; bit < 16; bit++){
+    for(int bit=0 ; bit < 32; bit++){
         targetImageBits[count][0] = hiddenDataLenBin[bit];
         count++;
     }
@@ -92,9 +96,9 @@ void recoverHiddenData(std::string imagePath, std::string outputPath){
     // Get the bits from the image
     std::vector<std::bitset<8>> imageBits = getImageBits(image);
 
-    // Get the length of the data (read first 16 hidden bits, skipping first 8)
-    std::bitset<16> hiddenDataLenBin;
-    for(int bit = 0; bit < 16; bit++){
+    // Get the length of the data (read first 32 hidden bits)
+    std::bitset<32> hiddenDataLenBin;
+    for(int bit = 0; bit < 32; bit++){
         hiddenDataLenBin[bit] = imageBits[bit][0];
     }
 
@@ -104,7 +108,7 @@ void recoverHiddenData(std::string imagePath, std::string outputPath){
     std::cout << "Binary representation: " << hiddenDataLenBin << std::endl;
     std::vector<std::bitset<8>> dataBits;
     dataBits.resize(dataLen);
-    int count = 16;
+    int count = 32;
     for(int i = 0; i < dataLen; i++){
         for(int bit = 0; bit < 8; bit++){
             dataBits[i][bit] = imageBits[count][0];
