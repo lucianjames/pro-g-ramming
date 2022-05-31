@@ -1,4 +1,8 @@
 #include <ncurses.h>
+#include <vector> // vectors are just easier to work with than arrays
+#include <unistd.h>
+
+#include "blocks.h"
 
 // Colour defines for ncurses 
 #define GREENBLACK 1
@@ -8,6 +12,51 @@
 #define MAGENTABLACK 5
 #define CYANBLACK 6
 #define WHITEBLACK 7
+
+class block{
+public:
+    // Shape of the block
+    std::vector<std::vector<int>> shape;
+    // Position of the block
+    int x = 1; // Account for the border
+    int y = 1; // Account for the border
+    // Colour of the block
+    int colourPair;
+    // Block rotation
+    int rotation;
+
+    block(){
+        // All this init is just for testing purposes
+        this->shape = block_S;
+        this->colourPair = GREENBLACK;
+    }
+
+    void draw(WINDOW *win){
+        // Enable colourpair attribute
+        wattron(win, COLOR_PAIR(this->colourPair));
+        // Draw the block
+        for(int i = 0; i < 4; i++){
+            for(int j = 0; j < 4; j++){
+                if(this->shape[i][j] == 1){
+                    mvwaddch(win, this->y + i, this->x + j, '#');
+                }
+            }
+        }
+        // Disable colourpair attribute
+        wattroff(win, COLOR_PAIR(this->colourPair));
+        // Refresh the window
+        wrefresh(win);
+    }
+
+    void tick(){
+        // Move the block down one row
+        if(this->y < 20-4){
+            this->y++;
+        }
+    }
+
+};
+
 
 int main(){
     // ==========Initial setup========== //
@@ -28,20 +77,40 @@ int main(){
     // ==========Game setup========== //
     int score = 0; // Initial score
     // Define tetris window in middle of screen (fixed size)
-    WINDOW *tetris_win = newwin(50, 30, (LINES - 50) / 2, (COLS - 30) / 2);
+    WINDOW *tetris_win = newwin(20, 20, (LINES - 20) / 2, (COLS - 20) / 2);
     refresh();
 
-    // Test all the colours in the tetris window
-    for(int i = 1; i < 7; i++){
-        wattron(tetris_win, COLOR_PAIR(i));
-        mvwprintw(tetris_win, i, 1, "Hello World");
-        wattroff(tetris_win, COLOR_PAIR(i));
+    block testBlock;
+
+    block testBlock2;
+    testBlock2.shape = block_O;
+    testBlock2.colourPair = REDBLACK;
+    testBlock2.x = 5;
+    testBlock2.y = 5;
+    // ================================= //
+
+    // ==========Game loop========== //
+    while(true){
+        // Move the blocks down
+        testBlock.tick();
+        testBlock2.tick();
+
+        // Clear screen
+        wclear(tetris_win);
+
+        // Render blocks
+        testBlock.draw(tetris_win);
+        testBlock2.draw(tetris_win);
+        box(tetris_win, 0, 0); // Draw a box around the window
+        wrefresh(tetris_win); // Refresh the window
+
+        // Wait
+        usleep(100000);
     }
-    box(tetris_win, 0, 0);
-    wrefresh(tetris_win);
 
     // Wait for input
     getch();
+
 
     // End ncurses
     endwin();
