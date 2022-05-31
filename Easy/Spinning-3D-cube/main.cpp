@@ -47,7 +47,7 @@ int main(){
         1, 6, 2
     };
 
-    // === Set up VBO, VBO layout, IBO, VAO, EBO ===
+    // === Set up VBO, VBO layout, VAO, EBO ===
     VBO vertexBuffer(vertices, sizeof(vertices)); // The VBO store the vertex data to be sent to the GPU
     VBO_layout layout; // This is a struct that defines the layout of the VBO
     layout.pushFloat(3); // Position data
